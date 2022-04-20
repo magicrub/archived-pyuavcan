@@ -7,8 +7,13 @@ import struct
 import logging
 import binascii
 import functools
-import collections
 
+try:
+    import collections.abc  # Python 3
+    MutableSequence = collections.abc.MutableSequence
+except ImportError:
+    import collections  # Python 2
+    MutableSequence = collections.MutableSequence
 
 import uavcan
 import uavcan.dsdl as dsdl
@@ -200,7 +205,7 @@ class PrimitiveValue(BaseValue):
             self._bits = format(int_value, "0" + str(self.type.bitlen) + "b")
 
 
-class ArrayValue(BaseValue, collections.MutableSequence):
+class ArrayValue(BaseValue, MutableSequence):
     def __init__(self, uavcan_type, tao=False, *args, **kwargs):
         super(ArrayValue, self).__init__(uavcan_type, *args, **kwargs)
         value_bitlen = getattr(self.type.value_type, "bitlen", None)
